@@ -6,9 +6,8 @@ from contextlib import contextmanager
 thread_locals = threading.local()
 
 @contextmanager
-def selenium_session(cls):
-    thread_locals.selenium = object.__new__(cls)
-    thread_locals.selenium.__init__()
+def selenium_session(cls, *args, **kwargs):
+    thread_locals.selenium = cls(*args, **kwargs)
     yield thread_locals.selenium
     thread_locals.selenium.quit()
 
