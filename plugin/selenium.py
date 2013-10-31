@@ -15,6 +15,3 @@ def selenium_session(cls, *args, **kwargs):
 def selenium():
     with selenium_session(webdriver.Firefox) as sel:
         yield sel
-
-
-
