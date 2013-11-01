@@ -1,5 +1,9 @@
-pytest_plugins = "plugin.highlight",\
-        "plugin.randomness",\
+import pytest
+import pages.login
+pytest_plugins = "plugin.randomness",\
         "plugin.navigation",\
-        "plugin.maximized",\
         "plugin.pytest_selenium"
+
+@pytest.fixture
+def login_admin():
+    pass
