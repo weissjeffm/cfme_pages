@@ -7,13 +7,13 @@ from page import Page
 
 class LoginPage(Base):
     # TODO: This obviously should change. File bug
-    _page_title = "CloudForms Management Engine: Dashboard"
-    _login_username_field_locator = (By.CSS_SELECTOR, '#user_name')
-    _login_password_field_locator = (By.CSS_SELECTOR, '#user_password')
-    _login_submit_button_locator = (By.ID, 'login')
+    title = "CloudForms Management Engine: Dashboard"
+    locators = {"login_username_field": (By.CSS_SELECTOR, '#user_name'),
+                "login_password_field": (By.CSS_SELECTOR, '#user_password'),
+                "login_submit_button": (By.ID, 'login')}
 
     # Demo locators
-    #_page_title = u"Mozilla \u2014 Home of the Mozilla Project \u2014 mozilla.org"
+    #title = u"Mozilla \u2014 Home of the Mozilla Project \u2014 mozilla.org"
     #_header_locator = (By.CSS_SELECTOR, 'h1')
 
     @property
@@ -22,24 +22,6 @@ class LoginPage(Base):
         and not the actual dashboard
         '''
         return Base.is_the_current_page and self.is_element_visible(*self._login_submit_button_locator)
-
-    @property
-    def username(self):
-        return self.selenium.find_element(*self._login_username_field_locator)
-
-    @property
-    def password(self):
-        return self.selenium.find_element(*self._login_password_field_locator)
-
-    @property
-    def login_button(self):
-        return self.selenium.find_element(*self._login_submit_button_locator)
-
-    def _click_on_login_button(self):
-        self.login_button.click()
-
-    def _press_enter_on_login_button(self):
-        self.login_button.send_keys(Keys.RETURN)
 
     def _click_on_login_and_send_window_size(self):
         self.login_button.click()
@@ -75,3 +57,8 @@ class LoginPage(Base):
         self.username.send_keys(credentials['username'])
         self.password.send_keys(credentials['password'])
 
+    def _press_enter_on_login_button(self):
+        self.login_button.send_keys(Keys.RETURN)
+
+    def login(self, user, password, method=lambda self=self: sel().click(self,"login_submit_button")):
+        pass

@@ -9,6 +9,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import time
 
+class PageMeta(type):
+    '''
+    Meta class that adds dynamic attributes, looking them up in the
+    class's locators dict.
+
+    '''
+    def __getattr__(self, name):
+        return self.locators[name]
+
+
 class Page(object):
     '''
     Base class for all Pages

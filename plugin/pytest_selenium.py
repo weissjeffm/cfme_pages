@@ -2,12 +2,16 @@ import pytest
 import threading
 from selenium import webdriver
 from contextlib import contextmanager
+from interruptingcow import timeout
+from time import sleep
 
-thread_locals = threading.local()
+# Some thread local storage that only gets set up
+# once, won't get blown away when reloading module
+if not 'thread_locals' in globals():
+    thread_locals = threading.local()
 
 def sel():
     return thread_locals.selenium
-
 
 @contextmanager
 def selenium_session(cls, *args, **kwargs):
@@ -37,8 +41,7 @@ def highlight(element):
     """Highlights (blinks) a Webdriver element.
         In pure javascript, as suggested by https://github.com/alp82.
     """
-    driver = element._parent
-    driver.execute_script("""
+    sel().execute_script("""
             element = arguments[0];
             original_style = element.getAttribute('style');
             element.setAttribute('style', original_style + "; background: yellow;");
@@ -60,10 +63,22 @@ def pytest_configure(config):
         WebElement._old_execute = WebElement._execute
         WebElement._execute = _execute
 
+ajax_wait_js = """
+var errfn = function(f,n) { try { return f(n) } catch(e) {return 0}};
+return errfn(function(n) { return jQuery.active }) + 
+errfn(function(n) { return angular.element('.ng-scope').injector().get('$http').pendingRequests.length });
+"""
 
-def find(cls, locator_name):
-    return sel().find_element(*cls.locators[locator_name])
+def wait_for(pred, max_wait_sec=120.0, repeat_sec=2.0):
+    with timeout(max_wait_sec):
+        while pred():
+            sleep(repeat_sec)
+
+def wait_for_ajax():
+    wait_for(lambda: sel().execute_script(ajax_wait_js))
+
+def click(el):
+    sel().find_element(*el).click()
+    wait_for_ajax()
 
 
-def click(cls, el):
-    find(cls, el).click()
