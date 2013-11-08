@@ -14,4 +14,3 @@ suds
 boto
 pysphere
 ovirt-engine-sdk-python
-interruptingcow 
